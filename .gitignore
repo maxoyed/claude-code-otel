@@ -36,11 +36,10 @@ ENV/
 analysis_results/
 *.log
 
-# Docker volumes (if persisted locally)
+# Docker volumes (managed by Docker, not persisted locally)
 prometheus_data/
 grafana_data/
 loki_data/
-data/
 
 # Temporary files
 tmp/

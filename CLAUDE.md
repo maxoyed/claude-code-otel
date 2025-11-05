@@ -74,10 +74,10 @@ Key configuration points:
 - Defines all services, volumes, ports, and network configuration
 - Uses custom bridge network `otel-network` for service communication
 - Uses `otel/opentelemetry-collector-contrib` (includes extra receivers/processors)
-- Includes persistent volumes for data storage:
-  - **Prometheus**: `./data/prometheus:/prometheus` - Persists time-series metrics
-  - **Loki**: `./data/loki:/var/loki` - Persists log data
-  - **Grafana**: `./data/grafana:/var/lib/grafana` - Persists dashboards and data sources
+- Includes named Docker volumes for data persistence (more portable than bind mounts):
+  - **prometheus-data**: Persists Prometheus time-series metrics
+  - **loki-data**: Persists Loki log data
+  - **grafana-data**: Persists Grafana dashboards and data sources
 
 ### `grafana-datasources.yml` & `grafana-dashboards.yml`
 - Auto-provisioning configuration for Grafana
@@ -158,9 +158,11 @@ docker system prune -f  # Clear unused Docker resources if storage is an issue
 
 ### Resetting data and starting fresh
 ```bash
-make clean             # Stops containers and removes volumes
-rm -rf ./data/         # Remove persistent data directory
-make up                # Start services with clean state
+make clean                           # Stops containers and removes volumes
+docker volume rm prometheus-data    # Remove Prometheus data volume
+docker volume rm loki-data          # Remove Loki data volume
+docker volume rm grafana-data       # Remove Grafana data volume
+make up                              # Start services with clean state
 ```
 
 ### Metrics not appearing in Grafana
