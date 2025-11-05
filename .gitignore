@@ -40,6 +40,7 @@ analysis_results/
 prometheus_data/
 grafana_data/
 loki_data/
+data/
 
 # Temporary files
 tmp/

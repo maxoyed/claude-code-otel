@@ -4,15 +4,15 @@ networks:
 
 services:
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest   # ≈ 50 MB
+    image: otel/opentelemetry-collector-contrib:latest # ≈ 50 MB
     container_name: otel-collector
     command: ["--config=/etc/otel/collector-config.yaml"]
     volumes:
       - ./collector-config.yaml:/etc/otel/collector-config.yaml:ro
     ports:
-      - "4317:4317"      # OTLP gRPC in
-      - "4318:4318"      # OTLP HTTP  in
-      - "8889:8889"      # Prometheus scrape out
+      - "4317:4317" # OTLP gRPC in
+      - "4318:4318" # OTLP HTTP  in
+      - "8889:8889" # Prometheus scrape out
     restart: unless-stopped
     networks:
       - otel-network
@@ -22,6 +22,7 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -35,6 +36,9 @@ services:
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - ./data/loki:/var/loki
     restart: unless-stopped
     networks:
       - otel-network
@@ -50,9 +54,10 @@ services:
       - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
       - ./grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
       - ./claude-code-dashboard.json:/var/lib/grafana/dashboards/claude-code-dashboard.json:ro
+      - ./data/grafana:/var/lib/grafana
     ports:
       - "3000:3000"
     restart: unless-stopped
     depends_on: [prometheus, loki]
     networks:
-      - otel-network 
+      - otel-network
